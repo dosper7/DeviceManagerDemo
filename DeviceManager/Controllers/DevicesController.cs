@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DeviceManager.Controllers
@@ -37,7 +38,7 @@ namespace DeviceManager.Controllers
             var response = await _mediator.Send(deviceCommand).ConfigureAwait(false);
 
             return response.Success ?
-                CreatedAtAction(nameof(GetById), new { Id = response.Data?.Id }, response) :
+                CreatedAtAction(nameof(GetById), new { Id = response.Data?.Id }, response.Data) :
                 BadRequest(response);
         }
 
@@ -89,7 +90,9 @@ namespace DeviceManager.Controllers
         public async Task<ActionResult<PagedResult<DeviceModel>>> GetAll([FromQuery] GetAllDevicesQuery query)
         {
             var response = await _mediator.Send(query).ConfigureAwait(false);
-            return Ok(response);
+            return response.Data?.Items?.Count() > 0 ?
+                    Ok(response.Data) :
+                    NoContent();
         }
 
 

@@ -1,16 +1,15 @@
 ﻿using DeviceManager.Business.Core.Common;
 using DeviceManager.Business.Models;
-using DeviceManager.Business.UseCases.Device.DeleteDevice;
 using DeviceManager.Business.UseCases.Device.GetAllDevices;
 using DeviceManager.Controllers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace DeviceManager.UnitTests
 {
@@ -82,8 +81,11 @@ namespace DeviceManager.UnitTests
         }
 
         [Fact]
-        public async Task Controller_GetAllDevices_should_return_OkResult()
+        public async Task Controller_GetAllDevices_should_return_OkResult_when_results_exists()
         {
+            var mock = new ApiResult<PagedResult<DeviceModel>>(new PagedResult<DeviceModel>() { Items = new[] { GetDeviceMock() } });
+
+            Mediator.Setup(x => x.Send(It.IsAny<GetAllDevicesQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);
 
             var action = await controller.GetAll(new GetAllDevicesQuery()).ConfigureAwait(false);
@@ -92,7 +94,20 @@ namespace DeviceManager.UnitTests
         }
 
         [Fact]
-        public async Task Controller_GetAllDevices_should_return_PagedResult_Object()
+        public async Task Controller_GetAllDevices_should_return_PagedResult_Object_when_results_exists()
+        {
+            var mock = new ApiResult<PagedResult<DeviceModel>>(new PagedResult<DeviceModel>() { Items = new[] { GetDeviceMock() } });
+
+            Mediator.Setup(x => x.Send(It.IsAny<GetAllDevicesQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
+            var controller = new DevicesController(Mediator.Object);
+
+            var action = await controller.GetAll(new GetAllDevicesQuery()).ConfigureAwait(false);
+            action.Result.Should().BeAssignableTo<OkObjectResult>();
+            (action.Result as OkObjectResult).Value.Should().BeAssignableTo<PagedResult<DeviceModel>>();
+        }
+
+        [Fact]
+        public async Task Controller_GetAllDevices_should_return_NoContent_when_results_dont_exists()
         {
             var mock = new ApiResult<PagedResult<DeviceModel>>();
 
@@ -100,8 +115,8 @@ namespace DeviceManager.UnitTests
             var controller = new DevicesController(Mediator.Object);
 
             var action = await controller.GetAll(new GetAllDevicesQuery()).ConfigureAwait(false);
-
-            action.Result.Should().BeAssignableTo<OkObjectResult>();
+            
+            action.Result.Should().BeAssignableTo<NoContentResult>();
         }
     }
 }

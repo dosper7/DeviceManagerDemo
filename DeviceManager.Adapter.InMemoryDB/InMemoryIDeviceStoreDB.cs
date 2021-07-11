@@ -24,7 +24,7 @@ namespace DeviceManager.Adapter.InMemoryDB
 
         private static void Seed()
         {
-            var brands = new[] { "Iphone, Samsung, Nokia" };
+            var brands = new[] { "Iphone", "Samsung", "Nokia" };
             var namesSeed = new[] { "ABC" };
 
             static string RandomString(string prefix)
@@ -41,7 +41,8 @@ namespace DeviceManager.Adapter.InMemoryDB
                 {
                     Brand = brand,
                     Name = RandomString(brand),
-                    CreationTime = DateTime.Now.AddDays((i + 1) * -1)
+                    CreationTime = DateTime.Now.AddDays((i + 1) * -1),
+                    Id = Guid.NewGuid()
 
                 }, (id, item) => item);
             }
