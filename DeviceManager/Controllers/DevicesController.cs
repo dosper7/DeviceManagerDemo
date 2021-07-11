@@ -4,6 +4,7 @@ using DeviceManager.Business.UseCases.Device.AddDevice;
 using DeviceManager.Business.UseCases.Device.DeleteDevice;
 using DeviceManager.Business.UseCases.Device.GetAllDevices;
 using DeviceManager.Business.UseCases.Device.GetDeviceById;
+using DeviceManager.Business.UseCases.Device.SearchDevice;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -85,14 +86,40 @@ namespace DeviceManager.Controllers
         /// <param name="query">paging filter</param>
         /// <returns>Devices with paging</returns>
         [HttpGet]
-        [SwaggerResponse(StatusCodes.Status200OK, type: typeof(DeviceModel))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(DeviceModel))]
+        [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PagedResult<DeviceModel>))]
+        [SwaggerResponse(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<PagedResult<DeviceModel>>> GetAll([FromQuery] GetAllDevicesQuery query)
         {
             var response = await _mediator.Send(query).ConfigureAwait(false);
+
+            if (!response.Success)
+                return BadRequest(response.Errors);
+
             return response.Data?.Items?.Count() > 0 ?
                     Ok(response.Data) :
-                    NoContent();
+                    StatusCode(StatusCodes.Status204NoContent);
+            
+        }
+
+        /// <summary>
+        /// Search devices.
+        /// </summary>
+        /// <param name="query">paging filter</param>
+        /// <returns>Filtered Devices with paging</returns>
+        [HttpGet]
+        [Route("Search")]
+        [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PagedResult<DeviceModel>))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(DeviceModel))]
+        public async Task<ActionResult<PagedResult<DeviceModel>>> Search([FromQuery] SearchDeviceQuery search)
+        {
+            var response = await _mediator.Send(search).ConfigureAwait(false);
+
+            if (!response.Success)
+                return BadRequest(response.Errors);
+
+            return response.Data?.Items?.Count() > 0 ?
+                    Ok(response.Data) :
+                    StatusCode(StatusCodes.Status204NoContent);
         }
 
 

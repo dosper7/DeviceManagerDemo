@@ -2,6 +2,7 @@ using DeviceManager.Business.Core.Common;
 using DeviceManager.Business.Models;
 using DeviceManager.Business.UseCases.Device.AddDevice;
 using DeviceManager.Business.UseCases.Device.DeleteDevice;
+using DeviceManager.Business.UseCases.Device.SearchDevice;
 using DeviceManager.Controllers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;

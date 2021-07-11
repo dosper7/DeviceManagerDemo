@@ -7,7 +7,7 @@ namespace DeviceManager.Adapter.InMemoryDB
     {
         public static IServiceCollection AddDatabase(this IServiceCollection services)
         {
-            return services.AddSingleton<IDeviceStore, InMemoryIDeviceStoreDB>();
+            return services.AddSingleton<IDeviceStore, InMemoryDevicesDatabase>();
         }
     }
 }

@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace DeviceManager.Adapter.InMemoryDB
 {
-    public class InMemoryIDeviceStoreDB : IDeviceStore
+    public class InMemoryDevicesDatabase : IDeviceStore
     {
         private static ConcurrentDictionary<Guid, DeviceModel> database = new ConcurrentDictionary<Guid, DeviceModel>();
         private static Random random = new Random();
-        private readonly ILogger<InMemoryIDeviceStoreDB> _logger;
+        private readonly ILogger<InMemoryDevicesDatabase> _logger;
 
-        public InMemoryIDeviceStoreDB(ILogger<InMemoryIDeviceStoreDB> logger)
+        public InMemoryDevicesDatabase(ILogger<InMemoryDevicesDatabase> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Seed();
@@ -36,7 +36,7 @@ namespace DeviceManager.Adapter.InMemoryDB
             for (int i = 0; i < 100; i++)
             {
                 var id = Guid.NewGuid();
-                var brand = brands[random.Next(0, brands.Length - 1)];
+                var brand = brands[random.Next(0, brands.Length)];
                 database.AddOrUpdate(id, new DeviceModel()
                 {
                     Brand = brand,
@@ -97,10 +97,12 @@ namespace DeviceManager.Adapter.InMemoryDB
             var items = from dbItem in database.Values
                         where
                             (deviceModel.Id == Guid.Empty || deviceModel.Id == dbItem.Id) &&
-                            (deviceModel.Brand == string.Empty || deviceModel.Brand == dbItem.Brand) &&
-                            (deviceModel.Name == string.Empty || deviceModel.Id == dbItem.Id) &&
+                            (string.IsNullOrWhiteSpace(deviceModel.Brand) || dbItem.Brand.Contains(deviceModel.Brand)) &&
+                            (string.IsNullOrWhiteSpace(deviceModel.Name) || dbItem.Name.Contains(deviceModel.Name)) &&
                             (deviceModel.CreationTime == DateTimeOffset.MinValue || deviceModel.CreationTime == dbItem.CreationTime)
+                        orderby dbItem.CreationTime descending
                         select dbItem;
+
 
             var results = new PagedResult<DeviceModel>()
             {
