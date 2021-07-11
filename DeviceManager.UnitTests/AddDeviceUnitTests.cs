@@ -109,7 +109,7 @@ namespace DeviceManager.UnitTests
 
             var action = await controller.AddDevice(new AddDeviceCommand()).ConfigureAwait(false);
 
-            action.Result.Should().BeAssignableTo<BadRequestObjectResult>();
+            action.Should().BeAssignableTo<BadRequestObjectResult>();
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace DeviceManager.UnitTests
 
             var action = await controller.AddDevice(new AddDeviceCommand()).ConfigureAwait(false);
 
-            action.Result.Should().BeOfType<CreatedAtActionResult>();
+            action.Should().BeOfType<CreatedAtActionResult>();
         }
 
 

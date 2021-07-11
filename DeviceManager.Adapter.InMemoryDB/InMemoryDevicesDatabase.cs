@@ -42,7 +42,7 @@ namespace DeviceManager.Adapter.InMemoryDB
                     Brand = brand,
                     Name = RandomString(brand),
                     CreationTime = DateTime.Now.AddDays((i + 1) * -1),
-                    Id = Guid.NewGuid()
+                    Id = id
 
                 }, (id, item) => item);
             }
@@ -123,20 +123,12 @@ namespace DeviceManager.Adapter.InMemoryDB
             _logger.LogDebug($"updating device with id {device.Id} in mode partialUpdate = {partialUpdate}.");
             if (database.TryGetValue(device.Id, out DeviceModel dbItem))
             {
-                if (partialUpdate)
-                {
-                    dbItem.Brand = device.Brand == default ? dbItem.Brand : device.Brand;
-                    dbItem.CreationTime = device.CreationTime == default ? dbItem.CreationTime : device.CreationTime;
-                    dbItem.Name = device.Name == default ? dbItem.Name : device.Name;
-                }
-                else
-                {
-                    dbItem.Brand = device.Brand;
-                    dbItem.CreationTime = device.CreationTime;
-                    dbItem.Name = dbItem.Name;
-                }
+                dbItem.Brand = !partialUpdate ? device.Brand : (device.Brand == default ? dbItem.Brand : device.Brand);
+                dbItem.CreationTime = !partialUpdate ? device.CreationTime : (device.CreationTime == default ? dbItem.CreationTime : device.CreationTime);
+                dbItem.Name = !partialUpdate ? dbItem.Name : (device.Name == default ? dbItem.Name : device.Name);
 
                 database[device.Id] = dbItem;
+                return Task.FromResult(dbItem);
             }
             return Task.FromResult(default(DeviceModel));
         }

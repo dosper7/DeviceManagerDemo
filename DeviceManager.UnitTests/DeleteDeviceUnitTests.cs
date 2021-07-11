@@ -80,7 +80,7 @@ namespace DeviceManager.UnitTests
 
             var action = await controller.Delete(Guid.Empty).ConfigureAwait(false);
 
-            action.Result.Should().BeAssignableTo<NotFoundObjectResult>();
+            action.Should().BeAssignableTo<NotFoundObjectResult>();
         }
 
         [Fact]
@@ -93,7 +93,7 @@ namespace DeviceManager.UnitTests
 
             var action = await controller.Delete(Guid.NewGuid()).ConfigureAwait(false);
 
-            action.Result.Should().BeAssignableTo<OkObjectResult>();
+            action.Should().BeAssignableTo<OkObjectResult>();
         }
     }
 }

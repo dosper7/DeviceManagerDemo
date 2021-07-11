@@ -57,7 +57,7 @@ namespace DeviceManager.UnitTests
 
             var action = await controller.GetById(Guid.Empty).ConfigureAwait(false);
 
-            action.Result.Should().BeAssignableTo<NotFoundObjectResult>();
+            action.Should().BeAssignableTo<NotFoundObjectResult>();
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace DeviceManager.UnitTests
 
             var action = await controller.GetById(Guid.NewGuid()).ConfigureAwait(false);
 
-            action.Result.Should().BeAssignableTo<OkObjectResult>();
+            action.Should().BeAssignableTo<OkObjectResult>();
         }
     }
 }

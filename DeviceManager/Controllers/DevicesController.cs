@@ -5,11 +5,13 @@ using DeviceManager.Business.UseCases.Device.DeleteDevice;
 using DeviceManager.Business.UseCases.Device.GetAllDevices;
 using DeviceManager.Business.UseCases.Device.GetDeviceById;
 using DeviceManager.Business.UseCases.Device.SearchDevice;
+using DeviceManager.Business.UseCases.Device.UpdateDevice;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,7 +36,7 @@ namespace DeviceManager.Controllers
         [HttpPost]
         [SwaggerResponse(StatusCodes.Status201Created, type: typeof(ApiResult<DeviceModel>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ApiResult<DeviceModel>))]
-        public async Task<ActionResult<DeviceModel>> AddDevice(AddDeviceCommand deviceCommand)
+        public async Task<ActionResult> AddDevice(AddDeviceCommand deviceCommand)
         {
             var response = await _mediator.Send(deviceCommand).ConfigureAwait(false);
 
@@ -51,8 +53,8 @@ namespace DeviceManager.Controllers
         [HttpGet]
         [Route("{id}")]
         [SwaggerResponse(StatusCodes.Status200OK, type: typeof(DeviceModel))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(DeviceModel))]
-        public async Task<ActionResult<DeviceModel>> GetById(Guid id)
+        [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(string))]
+        public async Task<ActionResult> GetById(Guid id)
         {
             var response = await _mediator.Send(new GetDeviceByIdQuery() { Id = id }).ConfigureAwait(false);
 
@@ -69,8 +71,8 @@ namespace DeviceManager.Controllers
         [HttpDelete]
         [Route("{id}")]
         [SwaggerResponse(StatusCodes.Status200OK, type: typeof(DeviceModel))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(DeviceModel))]
-        public async Task<ActionResult<DeviceModel>> Delete(Guid id)
+        [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(IList<string>))]
+        public async Task<ActionResult> Delete(Guid id)
         {
             var response = await _mediator.Send(new DeleteDeviceCommand() { Id = id }).ConfigureAwait(false);
 
@@ -87,18 +89,15 @@ namespace DeviceManager.Controllers
         /// <returns>Devices with paging</returns>
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PagedResult<DeviceModel>))]
-        [SwaggerResponse(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult<PagedResult<DeviceModel>>> GetAll([FromQuery] GetAllDevicesQuery query)
+        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IList<string>))]
+        public async Task<ActionResult> GetAll([FromQuery] GetAllDevicesQuery query)
         {
             var response = await _mediator.Send(query).ConfigureAwait(false);
 
-            if (!response.Success)
-                return BadRequest(response.Errors);
+            return response.Success ? 
+                    Ok(response.Data) : 
+                    BadRequest(response.Errors);
 
-            return response.Data?.Items?.Count() > 0 ?
-                    Ok(response.Data) :
-                    StatusCode(StatusCodes.Status204NoContent);
-            
         }
 
         /// <summary>
@@ -109,17 +108,64 @@ namespace DeviceManager.Controllers
         [HttpGet]
         [Route("Search")]
         [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PagedResult<DeviceModel>))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(DeviceModel))]
-        public async Task<ActionResult<PagedResult<DeviceModel>>> Search([FromQuery] SearchDeviceQuery search)
+        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IEnumerable<string>))]
+        public async Task<ActionResult> Search([FromQuery] SearchDeviceQuery search)
         {
             var response = await _mediator.Send(search).ConfigureAwait(false);
 
-            if (!response.Success)
-                return BadRequest(response.Errors);
+            return response.Success ?
+                     Ok(response.Data) :
+                     BadRequest(response.Errors);
+        }
 
-            return response.Data?.Items?.Count() > 0 ?
-                    Ok(response.Data) :
-                    StatusCode(StatusCodes.Status204NoContent);
+
+        /// <summary>
+        /// Partial Update Device.
+        /// </summary>
+        /// <param name="device">Device to update.</param>
+        /// <returns>Updated device.</returns>
+        [HttpPatch]
+        [SwaggerResponse(StatusCodes.Status200OK, type: typeof(DeviceModel))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IEnumerable<string>))]
+        public async Task<ActionResult> PartialUpdate(DeviceModel device)
+        {
+            var command = new UpdateDeviceCommand()
+            {
+                Id = device.Id,
+                Name = device.Name,
+                Brand = device.Brand,
+                CreationTime = device.CreationTime,
+                IsPartialUpdate = true,
+            };
+
+            var response = await _mediator.Send(command).ConfigureAwait(false);
+
+            return response.Success ? Ok(response.Data) : BadRequest(response.Errors);
+        }
+
+
+        /// <summary>
+        /// Full Update Device.
+        /// </summary>
+        /// <param name="device">Device to update.</param>
+        /// <returns>Updated device.</returns>
+        [HttpPut]
+        [SwaggerResponse(StatusCodes.Status200OK, type: typeof(DeviceModel))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IEnumerable<string>))]
+        public async Task<ActionResult> FullUpdate(DeviceModel device)
+        {
+            var command = new UpdateDeviceCommand()
+            {
+                Id = device.Id,
+                Name = device.Name,
+                Brand = device.Brand,
+                CreationTime = device.CreationTime,
+                IsPartialUpdate = false,
+            };
+
+            var response = await _mediator.Send(command).ConfigureAwait(false);
+
+            return response.Success ? Ok(response.Data) : BadRequest(response.Errors);
         }
 
 

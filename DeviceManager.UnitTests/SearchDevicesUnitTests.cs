@@ -113,7 +113,7 @@ namespace DeviceManager.UnitTests
 
             var action = await controller.Search(new SearchDeviceQuery()).ConfigureAwait(false);
 
-            action.Result.Should().BeAssignableTo<OkObjectResult>();
+            action.Should().BeAssignableTo<OkObjectResult>();
         }
 
         [Fact]
@@ -125,24 +125,9 @@ namespace DeviceManager.UnitTests
             var controller = new DevicesController(Mediator.Object);
 
             var action = await controller.Search(new SearchDeviceQuery()).ConfigureAwait(false);
-            action.Result.Should().BeAssignableTo<ObjectResult>();
-            (action.Result as ObjectResult).Value.Should().BeAssignableTo<PagedResult<DeviceModel>>();
+            action.Should().BeAssignableTo<ObjectResult>();
+            (action as ObjectResult).Value.Should().BeAssignableTo<PagedResult<DeviceModel>>();
         }
-
-        [Fact]
-        public async Task Controller_SearchDevices_should_return_204Status_when_results_dont_exists()
-        {
-            var mock = new ApiResult<PagedResult<DeviceModel>>();
-
-            Mediator.Setup(x => x.Send(It.IsAny<SearchDeviceQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
-            var controller = new DevicesController(Mediator.Object);
-
-            var action = await controller.Search(new SearchDeviceQuery()).ConfigureAwait(false);
-
-            action.Result.Should().BeAssignableTo<StatusCodeResult>();
-            (action.Result as StatusCodeResult).StatusCode.Should().Be(204);
-        }
-
 
         [Fact]
         public async Task Controller_SearchDevices_should_return_BadRequest_when_result_has_errors()
@@ -155,7 +140,7 @@ namespace DeviceManager.UnitTests
 
             var action = await controller.Search(new SearchDeviceQuery() { StartIndex = -1 }).ConfigureAwait(false);
 
-            action.Result.Should().BeAssignableTo<BadRequestObjectResult>();
+            action.Should().BeAssignableTo<BadRequestObjectResult>();
         }
 
 
