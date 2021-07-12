@@ -10,7 +10,7 @@ namespace DeviceManager.Business.Ports
         Task<DeviceModel> AddDeviceAsync(DeviceModel device);
         Task<DeviceModel> GetDeviceByIdAsync(Guid deviceId);
         Task<PagedResult<DeviceModel>> GetAllDevicesAsync(int startIndex = 0, int pageSize = 10);
-        Task<DeviceModel> UpateDeviceAsync(DeviceModel device, bool partialUpdate = false);
+        Task<DeviceModel> UpateDeviceAsync(DeviceModel device);
         Task<DeviceModel> DeleteDeviceAsync(Guid deviceId);
         Task<PagedResult<DeviceModel>> SearchDeviceAsync(DeviceModel deviceModel, int startIndex = 0, int pageSize = 10);
     }

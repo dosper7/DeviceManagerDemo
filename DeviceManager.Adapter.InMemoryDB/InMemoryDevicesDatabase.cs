@@ -115,20 +115,15 @@ namespace DeviceManager.Adapter.InMemoryDB
 
         }
 
-        public Task<DeviceModel> UpateDeviceAsync(DeviceModel device, bool partialUpdate = false)
+        public Task<DeviceModel> UpateDeviceAsync(DeviceModel device)
         {
             if (device is null)
                 throw new ArgumentNullException(nameof(device));
 
-            _logger.LogDebug($"updating device with id {device.Id} in mode partialUpdate = {partialUpdate}.");
-            if (database.TryGetValue(device.Id, out DeviceModel dbItem))
+            if (database.TryGetValue(device.Id, out DeviceModel dbDevice))
             {
-                dbItem.Brand = !partialUpdate ? device.Brand : (device.Brand == default ? dbItem.Brand : device.Brand);
-                dbItem.CreationTime = !partialUpdate ? device.CreationTime : (device.CreationTime == default ? dbItem.CreationTime : device.CreationTime);
-                dbItem.Name = !partialUpdate ? dbItem.Name : (device.Name == default ? dbItem.Name : device.Name);
-
-                database[device.Id] = dbItem;
-                return Task.FromResult(dbItem);
+                database[device.Id] = dbDevice;
+                return Task.FromResult(dbDevice);
             }
             return Task.FromResult(default(DeviceModel));
         }

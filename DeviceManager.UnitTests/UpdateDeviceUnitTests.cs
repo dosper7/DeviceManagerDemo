@@ -18,11 +18,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Handler_Update_Device_should_return_updated_device()
         {
-
-            var mock = GetDeviceMock();
-            var handler = new UpdateDeviceCommandHandler(Database.Object);
-            Database.Setup(x => x.GetDeviceByIdAsync(It.IsAny<Guid>())).ReturnsAsync(mock);
-            Database.Setup(x => x.UpateDeviceAsync(It.IsAny<DeviceModel>(), It.IsAny<bool>())).ReturnsAsync(mock);
+            var (mock, handler) = SetupMockAndHandler();
 
             var response = await handler.Handle(new UpdateDeviceCommand(), default).ConfigureAwait(false);
 
@@ -31,13 +27,84 @@ namespace DeviceManager.UnitTests
         }
 
         [Fact]
+        public async Task Handler_Update_Device_should_override_all_fields_when_IsPartialUpdate_is_false()
+        {
+            var (mock, handler) = SetupMockAndHandler();
+            var dataToUpdate = new UpdateDeviceCommand
+            {
+                Name = "1",
+                Brand = "1",
+                CreationTime = DateTime.Now.AddDays(1),
+                Id = mock.Id,
+                IsPartialUpdate = false,
+            };
+            var response = await handler.Handle(dataToUpdate, default).ConfigureAwait(false);
+
+            response.Should().NotBeNull();
+            response.Data.Name.Should().Be(dataToUpdate.Name);
+            response.Data.Brand.Should().Be(dataToUpdate.Brand);
+            response.Data.CreationTime.Should().Be(dataToUpdate.CreationTime.GetValueOrDefault());
+            response.Data.Id.Should().Be(dataToUpdate.Id);
+        }
+
+        [Fact]
+        public async Task Handler_Update_Device_should_update_brand_when_IsPartialUpdate_is_true()
+        {
+            var (mock, handler) = SetupMockAndHandler();
+            var dataToUpdate = new UpdateDeviceCommand
+            {
+                Brand = "1",
+                IsPartialUpdate = true,
+            };
+            var response = await handler.Handle(dataToUpdate, default).ConfigureAwait(false);
+
+            response.Should().NotBeNull();
+            response.Data.Name.Should().Be(mock.Name);
+            response.Data.Brand.Should().Be(dataToUpdate.Brand);
+            response.Data.CreationTime.Should().Be(mock.CreationTime);
+            response.Data.Id.Should().Be(mock.Id);
+        }
+
+        [Fact]
+        public async Task Handler_Update_Device_should_update_Name_when_IsPartialUpdate_is_true()
+        {
+            var (mock, handler) = SetupMockAndHandler();
+            var dataToUpdate = new UpdateDeviceCommand
+            {
+                Name = "1",
+                IsPartialUpdate = true,
+            };
+            var response = await handler.Handle(dataToUpdate, default).ConfigureAwait(false);
+
+            response.Should().NotBeNull();
+            response.Data.Name.Should().Be(dataToUpdate.Name);
+            response.Data.Brand.Should().Be(mock.Brand);
+            response.Data.CreationTime.Should().Be(mock.CreationTime);
+            response.Data.Id.Should().Be(mock.Id);
+        }
+
+        [Fact]
+        public async Task Handler_Update_Device_should_update_CreationTime_when_IsPartialUpdate_is_true()
+        {
+            var (mock, handler) = SetupMockAndHandler();
+            var dataToUpdate = new UpdateDeviceCommand
+            {
+                CreationTime = DateTime.Now.AddDays(1),
+                IsPartialUpdate = true,
+            };
+            var response = await handler.Handle(dataToUpdate, default).ConfigureAwait(false);
+
+            response.Should().NotBeNull();
+            response.Data.Name.Should().Be(mock.Name);
+            response.Data.Brand.Should().Be(mock.Brand);
+            response.Data.CreationTime.Should().Be(dataToUpdate.CreationTime.GetValueOrDefault());
+            response.Data.Id.Should().Be(mock.Id);
+        }
+
+        [Fact]
         public async Task Handler_Update_Device_should_return_error_if_deviceId_doesnt_exist()
         {
-
-            var mock = GetDeviceMock();
-            var handler = new UpdateDeviceCommandHandler(Database.Object);
-            Database.Setup(x => x.GetDeviceByIdAsync(It.IsAny<Guid>()));
-            Database.Setup(x => x.UpateDeviceAsync(It.IsAny<DeviceModel>(), It.IsAny<bool>())).ReturnsAsync(mock);
+            var (mock, handler) = SetupMockAndHandler(returnNullOnGetDeviceById: true);
 
             var response = await handler.Handle(new UpdateDeviceCommand(), default).ConfigureAwait(false);
 
@@ -131,7 +198,7 @@ namespace DeviceManager.UnitTests
             var validations = await validator.ValidateAsync(new UpdateDeviceCommand()
             {
                 Id = Guid.NewGuid(),
-                Name="1",
+                Name = "1",
                 IsPartialUpdate = true,
             });
 
@@ -241,6 +308,18 @@ namespace DeviceManager.UnitTests
 
             action.Should().BeOfType<OkObjectResult>();
         }
+
+
+        private (DeviceModel mock, UpdateDeviceCommandHandler handler) SetupMockAndHandler(bool returnNullOnGetDeviceById = false, bool returnMockOnHandler = false)
+        {
+            var mock = GetDeviceMock();
+            var handler = new UpdateDeviceCommandHandler(Database.Object, Logger.Object);
+            Database.Setup(x => x.GetDeviceByIdAsync(It.IsAny<Guid>())).ReturnsAsync(returnNullOnGetDeviceById ? null : mock);
+            Database.Setup(x => x.UpateDeviceAsync(It.IsAny<DeviceModel>())).ReturnsAsync(returnMockOnHandler ? null : mock);
+            return (mock, handler);
+        }
+
+
 
 
     }
