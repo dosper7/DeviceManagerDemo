@@ -6,8 +6,8 @@ namespace DeviceManager.Business.UseCases.Device.AddDevice
     {
         public AddDeviceCommandValidator()
         {
-            RuleFor(m => m.Name).NotNull().WithMessage("Name is missing.");
-            RuleFor(m => m.Brand).NotNull().WithMessage("Brand is missing.");
+            RuleFor(m => m.Name).NotEmpty().WithMessage("Name is missing.");
+            RuleFor(m => m.Brand).NotEmpty().WithMessage("Brand is missing.");
             RuleFor(m => m.CreationTime).NotEmpty().WithMessage("CreationTimeme is missing.");
         }
 

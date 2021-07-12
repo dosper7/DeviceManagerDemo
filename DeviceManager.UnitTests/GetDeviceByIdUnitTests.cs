@@ -72,5 +72,18 @@ namespace DeviceManager.UnitTests
 
             action.Should().BeAssignableTo<OkObjectResult>();
         }
+
+        [Fact]
+        public async Task Controller_GetDeviceById_should_return_badRequest_if_result_has_errors()
+        {
+            var mock = new ApiResult<DeviceModel>(GetDeviceMock());
+            mock.AddError(string.Empty);
+            Mediator.Setup(x => x.Send(It.IsAny<GetDeviceByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
+            var controller = new DevicesController(Mediator.Object);
+
+            var action = await controller.GetById(Guid.NewGuid()).ConfigureAwait(false);
+
+            action.Should().BeAssignableTo<BadRequestObjectResult>();
+        }
     }
 }

@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DeviceManager.Controllers
@@ -35,14 +34,14 @@ namespace DeviceManager.Controllers
         /// <returns>Created Device</returns>
         [HttpPost]
         [SwaggerResponse(StatusCodes.Status201Created, type: typeof(ApiResult<DeviceModel>))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ApiResult<DeviceModel>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IList<string>))]
         public async Task<ActionResult> AddDevice(AddDeviceCommand deviceCommand)
         {
             var response = await _mediator.Send(deviceCommand).ConfigureAwait(false);
 
             return response.Success ?
                 CreatedAtAction(nameof(GetById), new { Id = response.Data?.Id }, response.Data) :
-                BadRequest(response);
+                BadRequest(response.Errors);
         }
 
         /// <summary>
@@ -54,9 +53,13 @@ namespace DeviceManager.Controllers
         [Route("{id}")]
         [SwaggerResponse(StatusCodes.Status200OK, type: typeof(DeviceModel))]
         [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(string))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IList<string>))]
         public async Task<ActionResult> GetById(Guid id)
         {
             var response = await _mediator.Send(new GetDeviceByIdQuery() { Id = id }).ConfigureAwait(false);
+
+            if (!response.Success)
+                return BadRequest(response.Data);
 
             return (response.Data?.Id).GetValueOrDefault() == Guid.Empty ?
                                 NotFound($"Device with id {id} not found.") :
@@ -94,9 +97,7 @@ namespace DeviceManager.Controllers
         {
             var response = await _mediator.Send(query).ConfigureAwait(false);
 
-            return response.Success ? 
-                    Ok(response.Data) : 
-                    BadRequest(response.Errors);
+            return response.Success ? Ok(response.Data) : BadRequest(response.Errors);
 
         }
 
@@ -108,14 +109,12 @@ namespace DeviceManager.Controllers
         [HttpGet]
         [Route("Search")]
         [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PagedResult<DeviceModel>))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IEnumerable<string>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IList<string>))]
         public async Task<ActionResult> Search([FromQuery] SearchDeviceQuery search)
         {
             var response = await _mediator.Send(search).ConfigureAwait(false);
 
-            return response.Success ?
-                     Ok(response.Data) :
-                     BadRequest(response.Errors);
+            return response.Success ? Ok(response.Data) : BadRequest(response.Errors);
         }
 
 
@@ -126,7 +125,7 @@ namespace DeviceManager.Controllers
         /// <returns>Updated device.</returns>
         [HttpPatch]
         [SwaggerResponse(StatusCodes.Status200OK, type: typeof(DeviceModel))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IEnumerable<string>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IList<string>))]
         public async Task<ActionResult> PartialUpdate(DeviceModel device)
         {
             var command = new UpdateDeviceCommand()
@@ -151,7 +150,7 @@ namespace DeviceManager.Controllers
         /// <returns>Updated device.</returns>
         [HttpPut]
         [SwaggerResponse(StatusCodes.Status200OK, type: typeof(DeviceModel))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IEnumerable<string>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IList<string>))]
         public async Task<ActionResult> FullUpdate(DeviceModel device)
         {
             var command = new UpdateDeviceCommand()
