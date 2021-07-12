@@ -71,7 +71,7 @@ namespace DeviceManager.Adapter.InMemoryDB
         {
             var results = new PagedResult<DeviceModel>();
             results.TotalCount = database.Count;
-            results.Items = database.Values.Skip(startIndex * pageSize).Take(pageSize).OrderByDescending(c => c.CreationTime);
+            results.Items = database.Values.OrderByDescending(c => c.CreationTime).Skip(startIndex * pageSize).Take(pageSize);
             _logger.LogDebug($"Get All devices with success.");
             return Task.FromResult(results);
         }
