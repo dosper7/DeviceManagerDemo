@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeviceManager.Business</name>
+    </assembly>
+    <members>
+        <member name="P:DeviceManager.Business.Core.Common.PagedResult`1.Items">
+            <summary>
+            Number of items returned
+            </summary>
+        </member>
+        <member name="P:DeviceManager.Business.Core.Common.PagedResult`1.TotalCount">
+            <summary>
+            Total Count of items
+            </summary>
+        </member>
+        <member name="P:DeviceManager.Business.UseCases.Device.GetAllDevices.GetAllDevicesQuery.StartIndex">
+            <summary>
+            zero based index to indicate the page to return.
+            </summary>
+        </member>
+        <member name="P:DeviceManager.Business.UseCases.Device.GetAllDevices.GetAllDevicesQuery.PageSize">
+            <summary>
+            Number of items to return in a page
+            </summary>
+        </member>
+    </members>
+</doc>

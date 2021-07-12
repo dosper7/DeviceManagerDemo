@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DeviceManager.Controllers
+namespace DeviceManager.Controllerss
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -28,12 +28,12 @@ namespace DeviceManager.Controllers
         }
 
         /// <summary>
-        /// Add Device
+        /// Add Device.
         /// </summary>
         /// <param name="deviceCommand">Device data to create.</param>
         /// <returns>Created Device</returns>
         [HttpPost]
-        [SwaggerResponse(StatusCodes.Status201Created, type: typeof(ApiResult<DeviceModel>))]
+        [SwaggerResponse(StatusCodes.Status201Created, type: typeof(DeviceModel))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(IList<string>))]
         public async Task<ActionResult> AddDevice(AddDeviceCommand deviceCommand)
         {
@@ -47,7 +47,7 @@ namespace DeviceManager.Controllers
         /// <summary>
         /// Get Device by Id.
         /// </summary>
-        /// <param name="deviceId">Device Id</param>
+        /// <param name="id">Device Id</param>
         /// <returns>Device</returns>
         [HttpGet]
         [Route("{id}")]
@@ -69,7 +69,7 @@ namespace DeviceManager.Controllers
         /// <summary>
         /// Delete Device.
         /// </summary>
-        /// <param name="deviceId">Device Id</param>
+        /// <param name="id">Device Id</param>
         /// <returns>Deleted Device</returns>
         [HttpDelete]
         [Route("{id}")]
@@ -104,8 +104,8 @@ namespace DeviceManager.Controllers
         /// <summary>
         /// Search devices.
         /// </summary>
-        /// <param name="query">paging filter</param>
-        /// <returns>Filtered Devices with paging</returns>
+        /// <param name="search">search filter.</param>
+        /// <returns>Filtered devices with paging.</returns>
         [HttpGet]
         [Route("Search")]
         [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PagedResult<DeviceModel>))]
@@ -121,7 +121,7 @@ namespace DeviceManager.Controllers
         /// <summary>
         /// Partial Update Device.
         /// </summary>
-        /// <param name="device">Device to update.</param>
+        /// <param name="device">Device fields to update.</param>
         /// <returns>Updated device.</returns>
         [HttpPatch]
         [SwaggerResponse(StatusCodes.Status200OK, type: typeof(DeviceModel))]
