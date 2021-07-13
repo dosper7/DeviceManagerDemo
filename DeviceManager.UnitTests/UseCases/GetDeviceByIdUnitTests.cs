@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DeviceManager.UnitTests
+namespace DeviceManager.UnitTests.UseCases
 {
     public class GetDeviceByIdUnitTests : BaseDeviceTest<GetDeviceByIdQueryHandler>
     {
@@ -19,7 +19,7 @@ namespace DeviceManager.UnitTests
         public async Task Handler_GetDeviceById_should_return_Device()
         {
             var handler = new GetDeviceByIdQueryHandler(Database.Object);
-            Database.Setup(x => x.GetDeviceByIdAsync(It.IsAny<Guid>())).ReturnsAsync(GetDeviceMock());
+            Database.Setup(x => x.GetDeviceByIdAsync(It.IsAny<Guid>())).ReturnsAsync(MockDeviceBuilder.Build());
 
             var response = await handler.Handle(new GetDeviceByIdQuery(), default).ConfigureAwait(false);
 
@@ -63,7 +63,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Controller_GetDeviceById_should_return_Ok_if_device_with_given_id_exists()
         {
-            var mock = new ApiResult<DeviceModel>(GetDeviceMock());
+            var mock = new ApiResult<DeviceModel>(MockDeviceBuilder.Build());
 
             Mediator.Setup(x => x.Send(It.IsAny<GetDeviceByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);
@@ -76,7 +76,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Controller_GetDeviceById_should_return_badRequest_if_result_has_errors()
         {
-            var mock = new ApiResult<DeviceModel>(GetDeviceMock());
+            var mock = new ApiResult<DeviceModel>(MockDeviceBuilder.Build());
             mock.AddError(string.Empty);
             Mediator.Setup(x => x.Send(It.IsAny<GetDeviceByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);

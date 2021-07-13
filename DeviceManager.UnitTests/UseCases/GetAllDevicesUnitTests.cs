@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DeviceManager.UnitTests
+namespace DeviceManager.UnitTests.UseCases
 {
     public class GetAllDevices : BaseDeviceTest<GetAllDevicesQueryHandler>
     {
@@ -18,7 +18,7 @@ namespace DeviceManager.UnitTests
         public async Task Handler_GetAllDevices_should_return_PagedResult_with_success()
         {
             var query = new GetAllDevicesQuery();
-            var devices = Enumerable.Range(0, 100).Select(p => GetDeviceMock());
+            var devices = Enumerable.Range(0, 1).Select(p => MockDeviceBuilder.Build());
             var mock = new PagedResult<DeviceModel>()
             {
                 Items = devices,
@@ -82,7 +82,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Controller_GetAllDevices_should_return_OkResult_when_results_exists()
         {
-            var mock = new ApiResult<PagedResult<DeviceModel>>(new PagedResult<DeviceModel>() { Items = new[] { GetDeviceMock() } });
+            var mock = new ApiResult<PagedResult<DeviceModel>>(new PagedResult<DeviceModel>() { Items = new[] { MockDeviceBuilder.Build() } });
 
             Mediator.Setup(x => x.Send(It.IsAny<GetAllDevicesQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);
@@ -95,7 +95,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Controller_GetAllDevices_should_return_PagedResult_Object_when_results_exists()
         {
-            var mock = new ApiResult<PagedResult<DeviceModel>>(new PagedResult<DeviceModel>() { Items = new[] { GetDeviceMock() } });
+            var mock = new ApiResult<PagedResult<DeviceModel>>(new PagedResult<DeviceModel>() { Items = new[] { MockDeviceBuilder.Build() } });
 
             Mediator.Setup(x => x.Send(It.IsAny<GetAllDevicesQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);

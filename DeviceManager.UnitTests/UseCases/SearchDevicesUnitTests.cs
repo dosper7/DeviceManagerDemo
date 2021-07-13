@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DeviceManager.UnitTests
+namespace DeviceManager.UnitTests.UseCases
 {
     public class SearchDevices : BaseDeviceTest<SearchDeviceQueryHandler>
     {
@@ -18,7 +18,7 @@ namespace DeviceManager.UnitTests
         public async Task Handler_SearchDevices_should_return_PagedResult_with_success()
         {
             var query = new SearchDeviceQuery();
-            var devices = Enumerable.Range(0, 100).Select(p => GetDeviceMock());
+            var devices = Enumerable.Range(0, 100).Select(p => MockDeviceBuilder.Build());
             var mock = new PagedResult<DeviceModel>()
             {
                 Items = devices,
@@ -106,7 +106,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Controller_SearchDevices_should_return_OkResult_when_results_exists()
         {
-            var mock = new ApiResult<PagedResult<DeviceModel>>(new PagedResult<DeviceModel>() { Items = new[] { GetDeviceMock() } });
+            var mock = new ApiResult<PagedResult<DeviceModel>>(new PagedResult<DeviceModel>() { Items = new[] { MockDeviceBuilder.Build() } });
 
             Mediator.Setup(x => x.Send(It.IsAny<SearchDeviceQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);
@@ -119,7 +119,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Controller_SearchDevices_should_return_PagedResult_Object_when_results_exists()
         {
-            var mock = new ApiResult<PagedResult<DeviceModel>>(new PagedResult<DeviceModel>() { Items = new[] { GetDeviceMock() } });
+            var mock = new ApiResult<PagedResult<DeviceModel>>(new PagedResult<DeviceModel>() { Items = new[] { MockDeviceBuilder.Build() } });
 
             Mediator.Setup(x => x.Send(It.IsAny<SearchDeviceQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);

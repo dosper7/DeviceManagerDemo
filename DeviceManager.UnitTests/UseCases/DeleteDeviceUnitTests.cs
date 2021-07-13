@@ -10,16 +10,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DeviceManager.UnitTests
+namespace DeviceManager.UnitTests.UseCases
 {
     public class DeleteDeviceUnitTests : BaseDeviceTest<DeleteDeviceCommandHandler>
     {
         [Fact]
         public async Task Handler_DeleteDevice_should_return_Device_when_deleted_with_success()
         {
+            var mock = MockDeviceBuilder.Build();
             var handler = new DeleteDeviceCommandHandler(Database.Object, Logger.Object);
-            Database.Setup(x => x.GetDeviceByIdAsync(It.IsAny<Guid>())).ReturnsAsync(GetDeviceMock());
-            Database.Setup(x => x.DeleteDeviceAsync(It.IsAny<Guid>())).ReturnsAsync(GetDeviceMock());
+            Database.Setup(x => x.GetDeviceByIdAsync(It.IsAny<Guid>())).ReturnsAsync(mock);
+            Database.Setup(x => x.DeleteDeviceAsync(It.IsAny<Guid>())).ReturnsAsync(mock);
 
             var response = await handler.Handle(new DeleteDeviceCommand() {Id = Guid.NewGuid() }, default).ConfigureAwait(false);
 
@@ -30,8 +31,9 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Handler_DeleteDevice_should_return_Error_when_deleted_device_is_not_returned()
         {
+            var mock = MockDeviceBuilder.Build();
             var handler = new DeleteDeviceCommandHandler(Database.Object, Logger.Object);
-            Database.Setup(x => x.GetDeviceByIdAsync(It.IsAny<Guid>())).ReturnsAsync(GetDeviceMock());
+            Database.Setup(x => x.GetDeviceByIdAsync(It.IsAny<Guid>())).ReturnsAsync(mock);
             Database.Setup(x => x.DeleteDeviceAsync(It.IsAny<Guid>()));
 
             var response = await handler.Handle(new DeleteDeviceCommand() { Id = Guid.NewGuid() }, default).ConfigureAwait(false);
@@ -86,7 +88,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Controller_DeleteDevice_should_return_Ok_if_device_with_given_id_exists()
         {
-            var mock = new ApiResult<DeviceModel>(GetDeviceMock());
+            var mock = new ApiResult<DeviceModel>(MockDeviceBuilder.Build());
 
             Mediator.Setup(x => x.Send(It.IsAny<DeleteDeviceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);

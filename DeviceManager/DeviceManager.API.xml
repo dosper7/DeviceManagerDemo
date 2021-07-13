@@ -4,49 +4,49 @@
         <name>DeviceManager.API</name>
     </assembly>
     <members>
-        <member name="M:DeviceManager.Controllerss.DevicesController.AddDevice(DeviceManager.Business.UseCases.Device.AddDevice.AddDeviceCommand)">
+        <member name="M:DeviceManager.Controllers.DevicesController.AddDevice(DeviceManager.Business.UseCases.Device.AddDevice.AddDeviceCommand)">
             <summary>
             Add Device.
             </summary>
             <param name="deviceCommand">Device data to create.</param>
             <returns>Created Device</returns>
         </member>
-        <member name="M:DeviceManager.Controllerss.DevicesController.GetById(System.Guid)">
+        <member name="M:DeviceManager.Controllers.DevicesController.GetById(System.Guid)">
             <summary>
             Get Device by Id.
             </summary>
             <param name="id">Device Id</param>
             <returns>Device</returns>
         </member>
-        <member name="M:DeviceManager.Controllerss.DevicesController.Delete(System.Guid)">
+        <member name="M:DeviceManager.Controllers.DevicesController.Delete(System.Guid)">
             <summary>
             Delete Device.
             </summary>
             <param name="id">Device Id</param>
             <returns>Deleted Device</returns>
         </member>
-        <member name="M:DeviceManager.Controllerss.DevicesController.GetAll(DeviceManager.Business.UseCases.Device.GetAllDevices.GetAllDevicesQuery)">
+        <member name="M:DeviceManager.Controllers.DevicesController.GetAll(DeviceManager.Business.UseCases.Device.GetAllDevices.GetAllDevicesQuery)">
             <summary>
             Get all devices with paging ordered by most recent Creation Time.
             </summary>
             <param name="query">paging filter</param>
             <returns>Devices with paging</returns>
         </member>
-        <member name="M:DeviceManager.Controllerss.DevicesController.Search(DeviceManager.Business.UseCases.Device.SearchDevice.SearchDeviceQuery)">
+        <member name="M:DeviceManager.Controllers.DevicesController.Search(DeviceManager.Business.UseCases.Device.SearchDevice.SearchDeviceQuery)">
             <summary>
             Search devices.
             </summary>
             <param name="search">search filter.</param>
             <returns>Filtered devices with paging.</returns>
         </member>
-        <member name="M:DeviceManager.Controllerss.DevicesController.PartialUpdate(DeviceManager.Business.Models.DeviceModel)">
+        <member name="M:DeviceManager.Controllers.DevicesController.PartialUpdate(DeviceManager.Business.Models.DeviceModel)">
             <summary>
             Partial Update Device.
             </summary>
             <param name="device">Device fields to update.</param>
             <returns>Updated device.</returns>
         </member>
-        <member name="M:DeviceManager.Controllerss.DevicesController.FullUpdate(DeviceManager.Business.Models.DeviceModel)">
+        <member name="M:DeviceManager.Controllers.DevicesController.FullUpdate(DeviceManager.Business.Models.DeviceModel)">
             <summary>
             Full Update Device.
             </summary>

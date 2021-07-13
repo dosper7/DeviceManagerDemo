@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DeviceManager.Controllerss
+namespace DeviceManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

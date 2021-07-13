@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DeviceManager.UnitTests
+namespace DeviceManager.UnitTests.UseCases
 {
 
     public class UpdateDeviceUnitTests : BaseDeviceTest<UpdateDeviceCommandHandler>
@@ -271,7 +271,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Controller_PartialUpdate_should_return_OKResult_when_result_Is_Success()
         {
-            var mock = new ApiResult<DeviceModel>() { Data = GetDeviceMock() };
+            var mock = new ApiResult<DeviceModel>() { Data = MockDeviceBuilder.Build() };
 
             Mediator.Setup(x => x.Send(It.IsAny<UpdateDeviceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);
@@ -299,7 +299,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Controller_FullUpdate_should_return_OKResult_when_result_Is_Success()
         {
-            var mock = new ApiResult<DeviceModel>() { Data = GetDeviceMock() };
+            var mock = new ApiResult<DeviceModel>() { Data = MockDeviceBuilder.Build() };
 
             Mediator.Setup(x => x.Send(It.IsAny<UpdateDeviceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);
@@ -312,7 +312,7 @@ namespace DeviceManager.UnitTests
 
         private (DeviceModel mock, UpdateDeviceCommandHandler handler) SetupMockAndHandler(bool returnNullOnGetDeviceById = false, bool returnMockOnHandler = false)
         {
-            var mock = GetDeviceMock();
+            var mock = MockDeviceBuilder.Build();
             var handler = new UpdateDeviceCommandHandler(Database.Object, Logger.Object);
             Database.Setup(x => x.GetDeviceByIdAsync(It.IsAny<Guid>())).ReturnsAsync(returnNullOnGetDeviceById ? null : mock);
             Database.Setup(x => x.UpateDeviceAsync(It.IsAny<DeviceModel>())).ReturnsAsync(returnMockOnHandler ? null : mock);

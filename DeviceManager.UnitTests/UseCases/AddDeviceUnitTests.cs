@@ -1,8 +1,6 @@
 using DeviceManager.Business.Core.Common;
 using DeviceManager.Business.Models;
 using DeviceManager.Business.UseCases.Device.AddDevice;
-using DeviceManager.Business.UseCases.Device.DeleteDevice;
-using DeviceManager.Business.UseCases.Device.SearchDevice;
 using DeviceManager.Controllers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DeviceManager.UnitTests
+namespace DeviceManager.UnitTests.UseCases
 {
 
     public class AddDeviceUnitTests : BaseDeviceTest<AddDeviceCommandHandler>
@@ -21,7 +19,7 @@ namespace DeviceManager.UnitTests
         public async Task Handler_Add_Device_should_return_id()
         {
             var handler = new AddDeviceCommandHandler(Database.Object, Logger.Object);
-            Database.Setup(x => x.AddDeviceAsync(It.IsAny<DeviceModel>())).ReturnsAsync(GetDeviceMock());
+            Database.Setup(x => x.AddDeviceAsync(It.IsAny<DeviceModel>())).ReturnsAsync(MockDeviceBuilder.Build());
 
             var response = await handler.Handle(new AddDeviceCommand(), default).ConfigureAwait(false);
 
@@ -32,8 +30,9 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Handler_Add_Device_should_return_error_if_id_not_present()
         {
+            var mock = MockDeviceBuilder.WithId(Guid.Empty).Build();
             var handler = new AddDeviceCommandHandler(Database.Object, Logger.Object);
-            Database.Setup(x => x.AddDeviceAsync(It.IsAny<DeviceModel>())).ReturnsAsync(GetDeviceMock(id: Guid.Empty));
+            Database.Setup(x => x.AddDeviceAsync(It.IsAny<DeviceModel>())).ReturnsAsync(mock);
 
             var response = await handler.Handle(new AddDeviceCommand(), default).ConfigureAwait(false);
 
@@ -115,7 +114,7 @@ namespace DeviceManager.UnitTests
         [Fact]
         public async Task Controller_Add_Device_should_return_CreatedAtResult_when_result_Is_Success()
         {
-            var mock = new ApiResult<DeviceModel>() { Data = GetDeviceMock() };
+            var mock = new ApiResult<DeviceModel>() { Data = MockDeviceBuilder.Build() };
 
             Mediator.Setup(x => x.Send(It.IsAny<AddDeviceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);
