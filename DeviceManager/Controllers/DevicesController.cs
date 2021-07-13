@@ -134,7 +134,7 @@ namespace DeviceManager.Controllers
                 Name = device.Name,
                 Brand = device.Brand,
                 CreationTime = device.CreationTime,
-                IsPartialUpdate = true,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Partial,
             };
 
             var response = await _mediator.Send(command).ConfigureAwait(false);
@@ -159,7 +159,7 @@ namespace DeviceManager.Controllers
                 Name = device.Name,
                 Brand = device.Brand,
                 CreationTime = device.CreationTime,
-                IsPartialUpdate = false,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Full,
             };
 
             var response = await _mediator.Send(command).ConfigureAwait(false);

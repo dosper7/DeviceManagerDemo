@@ -27,7 +27,7 @@ namespace DeviceManager.UnitTests.UseCases
         }
 
         [Fact]
-        public async Task Handler_Update_Device_should_override_all_fields_when_IsPartialUpdate_is_false()
+        public async Task Handler_Update_Device_should_override_all_fields_when_is_fullUpdate()
         {
             var (mock, handler) = SetupMockAndHandler();
             var dataToUpdate = new UpdateDeviceCommand
@@ -36,7 +36,7 @@ namespace DeviceManager.UnitTests.UseCases
                 Brand = "1",
                 CreationTime = DateTime.Now.AddDays(1),
                 Id = mock.Id,
-                IsPartialUpdate = false,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Full,
             };
             var response = await handler.Handle(dataToUpdate, default).ConfigureAwait(false);
 
@@ -48,13 +48,13 @@ namespace DeviceManager.UnitTests.UseCases
         }
 
         [Fact]
-        public async Task Handler_Update_Device_should_update_brand_when_IsPartialUpdate_is_true()
+        public async Task Handler_Update_Device_should_update_brand_when_IsPartialUpdate()
         {
             var (mock, handler) = SetupMockAndHandler();
             var dataToUpdate = new UpdateDeviceCommand
             {
                 Brand = "1",
-                IsPartialUpdate = true,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Partial,
             };
             var response = await handler.Handle(dataToUpdate, default).ConfigureAwait(false);
 
@@ -66,13 +66,13 @@ namespace DeviceManager.UnitTests.UseCases
         }
 
         [Fact]
-        public async Task Handler_Update_Device_should_update_Name_when_IsPartialUpdate_is_true()
+        public async Task Handler_Update_Device_should_update_Name_when_IsPartialUpdate()
         {
             var (mock, handler) = SetupMockAndHandler();
             var dataToUpdate = new UpdateDeviceCommand
             {
                 Name = "1",
-                IsPartialUpdate = true,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Partial,
             };
             var response = await handler.Handle(dataToUpdate, default).ConfigureAwait(false);
 
@@ -84,13 +84,13 @@ namespace DeviceManager.UnitTests.UseCases
         }
 
         [Fact]
-        public async Task Handler_Update_Device_should_update_CreationTime_when_IsPartialUpdate_is_true()
+        public async Task Handler_Update_Device_should_update_CreationTime_when_IsPartialUpdate()
         {
             var (mock, handler) = SetupMockAndHandler();
             var dataToUpdate = new UpdateDeviceCommand
             {
                 CreationTime = DateTime.Now.AddDays(1),
-                IsPartialUpdate = true,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Partial,
             };
             var response = await handler.Handle(dataToUpdate, default).ConfigureAwait(false);
 
@@ -122,14 +122,14 @@ namespace DeviceManager.UnitTests.UseCases
                 Brand = "1",
                 CreationTime = DateTime.Now,
                 Name = "1",
-                IsPartialUpdate = false,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Full,
             });
 
             validations.IsValid.Should().BeFalse();
         }
 
         [Fact]
-        public async Task Validator_Update_Device_should_fail_if_PartialUpdate_is_false_and_name_field_not_defined()
+        public async Task Validator_Update_Device_should_fail_if_is_fullUpdate_and_name_field_not_defined()
         {
             var validator = new UpdateDeviceCommandValidator();
 
@@ -138,14 +138,14 @@ namespace DeviceManager.UnitTests.UseCases
                 Brand = "1",
                 CreationTime = DateTime.Now,
                 Id = Guid.NewGuid(),
-                IsPartialUpdate = false,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Full,
             });
 
             validations.IsValid.Should().BeFalse();
         }
 
         [Fact]
-        public async Task Validator_Update_Device_should_fail_if_PartialUpdate_is_false_and_brand_field_not_defined()
+        public async Task Validator_Update_Device_should_fail_if_is_fullUpdate_and_brand_field_not_defined()
         {
             var validator = new UpdateDeviceCommandValidator();
 
@@ -154,14 +154,14 @@ namespace DeviceManager.UnitTests.UseCases
                 Name = "1",
                 CreationTime = DateTime.Now,
                 Id = Guid.NewGuid(),
-                IsPartialUpdate = false,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Full,
             });
 
             validations.IsValid.Should().BeFalse();
         }
 
         [Fact]
-        public async Task Validator_Update_Device_should_fail_if_PartialUpdate_is_false_and_CreationTime_field_not_defined()
+        public async Task Validator_Update_Device_should_fail_if_is_fullUpdate_and_CreationTime_field_not_defined()
         {
             var validator = new UpdateDeviceCommandValidator();
 
@@ -170,28 +170,28 @@ namespace DeviceManager.UnitTests.UseCases
                 Name = "1",
                 Brand = "1",
                 Id = Guid.NewGuid(),
-                IsPartialUpdate = false,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Full,
             });
 
             validations.IsValid.Should().BeFalse();
         }
 
         [Fact]
-        public async Task Validator_Update_Device_should_fail_if_PartialUpdate_is_true_no_field_is_defined()
+        public async Task Validator_Update_Device_should_fail_if_is_PartialUpdate_and_no_field_is_defined()
         {
             var validator = new UpdateDeviceCommandValidator();
 
             var validations = await validator.ValidateAsync(new UpdateDeviceCommand()
             {
                 Id = Guid.NewGuid(),
-                IsPartialUpdate = true,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Partial,
             });
 
             validations.IsValid.Should().BeFalse();
         }
 
         [Fact]
-        public async Task Validator_Update_Device_should_pass_if_PartialUpdate_is_true_and_Name_field_is_defined()
+        public async Task Validator_Update_Device_should_pass_if_is_PartialUpdate_and_and_Name_field_is_defined()
         {
             var validator = new UpdateDeviceCommandValidator();
 
@@ -199,14 +199,14 @@ namespace DeviceManager.UnitTests.UseCases
             {
                 Id = Guid.NewGuid(),
                 Name = "1",
-                IsPartialUpdate = true,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Partial,
             });
 
             validations.IsValid.Should().BeTrue();
         }
 
         [Fact]
-        public async Task Validator_Update_Device_should_pass_if_PartialUpdate_is_true_and_Brand_field_is_defined()
+        public async Task Validator_Update_Device_should_pass_if_is_PartialUpdate_and_and_Brand_field_is_defined()
         {
             var validator = new UpdateDeviceCommandValidator();
 
@@ -214,14 +214,14 @@ namespace DeviceManager.UnitTests.UseCases
             {
                 Id = Guid.NewGuid(),
                 Brand = "1",
-                IsPartialUpdate = true,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Partial,
             });
 
             validations.IsValid.Should().BeTrue();
         }
 
         [Fact]
-        public async Task Validator_Update_Device_should_pass_if_PartialUpdate_is_true_and_CreationTime_field_is_defined()
+        public async Task Validator_Update_Device_should_pass_if_is_PartialUpdate_and_and_CreationTime_field_is_defined()
         {
             var validator = new UpdateDeviceCommandValidator();
 
@@ -229,14 +229,14 @@ namespace DeviceManager.UnitTests.UseCases
             {
                 Id = Guid.NewGuid(),
                 CreationTime = DateTime.Now,
-                IsPartialUpdate = true,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Partial,
             });
 
             validations.IsValid.Should().BeTrue();
         }
 
         [Fact]
-        public async Task Validator_Update_Device_should_pass_if_PartialUpdate_is_false_and_all_fields_are_defined()
+        public async Task Validator_Update_Device_should_pass_if_is_fullUpdate_and_all_fields_are_defined()
         {
             var validator = new UpdateDeviceCommandValidator();
 
@@ -246,7 +246,7 @@ namespace DeviceManager.UnitTests.UseCases
                 Name = "1",
                 CreationTime = DateTime.Now,
                 Brand = "1",
-                IsPartialUpdate = false,
+                UpdateType = UpdateDeviceCommand.UpdateTypeEnum.Full,
             });
 
             validations.IsValid.Should().BeTrue();

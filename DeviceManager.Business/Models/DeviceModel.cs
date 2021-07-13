@@ -13,5 +13,6 @@ namespace DeviceManager.Business.Models
         {
             return $"Name:{Name}, Brand:{Brand}, CreationTime:{CreationTime}, Id:{Id}";
         }
+
     }
 }

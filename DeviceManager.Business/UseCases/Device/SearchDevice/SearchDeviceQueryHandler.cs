@@ -2,7 +2,6 @@
 using DeviceManager.Business.Core.Contracts;
 using DeviceManager.Business.Models;
 using DeviceManager.Business.Ports;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

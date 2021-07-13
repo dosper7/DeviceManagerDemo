@@ -11,7 +11,13 @@ namespace DeviceManager.Business.UseCases.Device.UpdateDevice
         public string Brand { get; set; }
         public DateTime? CreationTime { get; set; }
         public Guid Id { get; set; }
-        public bool IsPartialUpdate { get; set; }
+        public UpdateTypeEnum UpdateType { get; set; }
+
+        public enum UpdateTypeEnum
+        {
+            Partial,
+            Full,
+        }
 
     }
 }
