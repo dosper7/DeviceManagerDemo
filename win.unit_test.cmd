@@ -1,0 +1,1 @@
+dotnet test ./DeviceManager.UnitTests/DeviceManager.UnitTests.csproj

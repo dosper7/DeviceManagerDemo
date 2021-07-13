@@ -291,7 +291,7 @@ namespace DeviceManager.UnitTests.UseCases
             Mediator.Setup(x => x.Send(It.IsAny<UpdateDeviceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);
 
-            var action = await controller.PartialUpdate(new DeviceModel()).ConfigureAwait(false);
+            var action = await controller.FullUpdate(new DeviceModel()).ConfigureAwait(false);
 
             action.Should().BeAssignableTo<BadRequestObjectResult>();
         }
@@ -304,7 +304,7 @@ namespace DeviceManager.UnitTests.UseCases
             Mediator.Setup(x => x.Send(It.IsAny<UpdateDeviceCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(mock);
             var controller = new DevicesController(Mediator.Object);
 
-            var action = await controller.PartialUpdate(new DeviceModel()).ConfigureAwait(false);
+            var action = await controller.FullUpdate(new DeviceModel()).ConfigureAwait(false);
 
             action.Should().BeOfType<OkObjectResult>();
         }
