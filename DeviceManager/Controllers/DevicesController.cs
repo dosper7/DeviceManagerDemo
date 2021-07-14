@@ -17,7 +17,9 @@ using System.Threading.Tasks;
 namespace DeviceManager.Controllers
 {
     [ApiController]
+    [ApiVersion("1.0")]
     [Route("api/[controller]")]
+   
     public class DevicesController : ControllerBase
     {
         private readonly IMediator _mediator;
