@@ -1,4 +1,4 @@
-# DeviceManagerDemo REST API
+# DeviceManagerDemo REST API Using Clean Architecture plus Vertical Sliced Design
 
 ## Prerequisites
 
